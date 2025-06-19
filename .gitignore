@@ -1,0 +1,31 @@
+# Ansible-generated retry files (from failed playbooks)
+*.retry
+
+# Python virtual environments
+venv/
+.env/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Logs
+*.log
+
+# Secret files (you should use vault, not commit raw secrets)
+secrets.yml
+*.key
+*.pem
+*.crt
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Ansible role cache (optional if using galaxy install)
+roles/*/.galaxy_install_info
+
+# Local configuration or backup files
+*.swp
+*.swo
+*~
+
