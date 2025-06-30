@@ -8,7 +8,7 @@
     ### Variables That Prompt the User
   vars_prompt:
     ### Prompt to Enter a User to Become
-    - name: become_user
+    name: become_user
       prompt: "Enter the user you want to set"
       private: no
 
