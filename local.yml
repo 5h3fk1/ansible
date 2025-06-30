@@ -1,7 +1,7 @@
 ---
 
 - name: Ubuntu Desktop Environment Configuration
-  hosts: all
+  hosts: local
   become: yes
   gather_facts: yes
 
