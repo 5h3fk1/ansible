@@ -5,9 +5,9 @@
   become: yes
   gather_facts: yes
 
-    ### Variable That Prompt the User 
+    ### Variables That Prompt the User
   vars_prompt:
-	### Prompt to Enter a User to Become
+    ### Prompt to Enter a User to Become
     - name: become_user
       prompt: "Enter the user you want to set"
       private: no
@@ -16,6 +16,10 @@
     - name: become_user_password
       prompt: "Enter a password for {{ become_user}}"
       private: yes
+
+	- name: desktop_env
+	  prompt: "Enter your desktop environment (gnome/cinnamon/mate)"
+      private: no
 
     ### Prompt to Enter Reboot the system
     - name: reboot_now
@@ -111,7 +115,7 @@
     - name: Copy wallpaper
       copy:
         src: files/wallpaper_1.jpg
-        dest: /usr/share/background/wallpaper_1.jpg
+        dest: /usr/share/backgrounds/wallpaper_1.jpg
         owner: root
         group: root
 
@@ -123,7 +127,7 @@
     
     - name: Set wallpaper position
       dconf:
-        key: "/org/gnome/desktop/backgrounds/picture-options"
+        key: "/org/gnome/desktop/background/picture-options"
         value: "'zoom'"
       become_user: "{{ become_user }}"
 
