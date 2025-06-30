@@ -9,20 +9,20 @@
   vars_prompt:
     ### Prompt to Enter a User to Become
     - name: become_user
-        prompt: "Enter the user you want to set"
+    prompt: "Enter the user you want to set"
         private: no
 
     ### Prompt to Enter a Password For The New User
     - name: become_user_password
-        prompt: "Enter a password for {{ become_user}}"
-        private: yes
+    prompt: "Enter a password for {{ become_user}}"
+    private: yes
 
     ### Prompt to Enter Reboot the system
     - name: reboot_now
-        prompt: "Do you want to reboot the system now? (yes/no)"
-        private: no
-        default: "no"  # Default fallback for reboot prompt
-        validate: '^yes$|^no$'  # Only accept "yes" or "no"
+    prompt: "Do you want to reboot the system now? (yes/no)"
+    private: no
+    default: "no"  # Default fallback for reboot prompt
+    validate: '^yes$|^no$'  # Only accept "yes" or "no"
 
   tasks:
     ### Ensure The User Exists, Then Hash password
