@@ -20,7 +20,7 @@
     - name: user_shell
       prompt: "Enter the user's shell"
       private: no
-      default "/bin/bash"
+      default: "/bin/bash"
 
     - name: user_groups
       prompt: "Enter the user's groups (comma-separated)"
