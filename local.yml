@@ -1,0 +1,164 @@
+---
+
+- name: Ubuntu Desktop Environment Configuration
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+    ### Variables That Prompt the User
+  vars_prompt:
+    ### Prompt to Enter a User to Become
+    - name: become_user
+      prompt: "Enter the user you want to set"
+      private: no
+
+    ### Prompt to Enter a Password For The New User
+    - name: become_user_password
+      prompt: "Enter a password for {{ become_user}}"
+      private: yes
+
+	- name: desktop_env
+	  prompt: "Enter your desktop environment (gnome/cinnamon/mate)"
+      private: no
+
+    ### Prompt to Enter Reboot the system
+    - name: reboot_now
+      prompt: "Do you want to reboot the system now? (yes/no)"
+      private: no
+      default: "no"  # Default fallback for reboot prompt
+      validate: '^yes$|^no$'  # Only accept "yes" or "no"
+
+  tasks:
+    ### Ensure The User Exists, Then Hash password
+    - name: Ensure the user is present and set password
+      user:
+        name: "{{ become_user }}"
+        state: present
+        password: "{{ become_user_password | password_hash('sha512') }}"
+
+    ### Add User to The Sudo Group
+    - name: Add become_user to the sudo group
+      user:
+        name: "{{ become_user }}"
+        groups: sudo
+        append: yes
+      become: yes
+
+    ### Add GPG Keys And Repositories
+    - name: Add repositories and GPG keys
+      block:
+      - name: Add floorp GPG key
+        apt_key:
+          url: https://ppa.floorp.app/KEY.gpg
+          state: present
+
+      - name: Add Floorp repository
+        apt_repository:
+          repo: 'deb [signed-by=/usr/share/keyrings/Floorp.gpg] https://ppa.floorp.app/ stable main'
+          filename: Floorp
+          state: present
+        register: floorp_repo
+        failed_when: floorp_repo.failed  # This will cause failure if this task doesn't succeed
+
+      - name: Add WezTerm GPG key
+        apt_key:
+          url: https://apt.fury.io/wez/gpg.key
+          state: present
+
+      - name: Add WezTerm repository
+        apt_repository:
+          repo: 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ stable main'
+          filename: wezterm
+          state: present
+        register: wezterm_repo
+        failed_when: wezterm_repo.failed  # Ensure the task fails if the repo setup fails
+
+    ### Add Neovim PPA (for Neovim installation)
+    - name: Add Neovim PPA
+      apt_repository:
+        repo: ppa:neovim-ppa/stable
+        state: present
+      register: neovim_repo
+      failed_when: neovim_repo.failed  # Ensure the task fails if the repo setup fails
+
+    ### Update and Install Packages, Programs and Dependencies
+
+    ### Update The Apt Repository Cache After Adding New Repositories
+    - name: Update apt repository
+      apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == 'Ubuntu'
+      register: repo_update
+      failed_when: repo_update.failed  # Fail the task if the repository update fails
+
+    ### Install Utilities And Dependencies
+    - name: Install additional useful utilities
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - gnupg
+          - software-properties-common
+        state: present
+
+    ### Install Other Programs
+    - name: Install other programs
+      apt:
+        name:
+          - floorp
+          - wezterm-nightly
+          - neovim
+        state: present
+
+    ### Set Desktop Wallpaper
+    - name: Copy wallpaper
+      copy:
+        src: files/wallpaper_1.jpg
+        dest: /usr/share/backgrounds/wallpaper_1.jpg
+        owner: root
+        group: root
+
+    - name: Set wallpaper
+      dconf:
+        key: "/org/gnome/desktop/background/picture-uri"
+        value: "file:///usr/share/backgrounds/wallpaper_1.jpg"
+      become_user: "{{ become_user }}"
+    
+    - name: Set wallpaper position
+      dconf:
+        key: "/org/gnome/desktop/background/picture-options"
+        value: "'zoom'"
+      become_user: "{{ become_user }}"
+
+    ### Add Configuration Files
+    - name: Copy .bashrc file
+      copy:
+        src: files/bashrc
+        dest: /home/{{ become_user }}/.bashrc
+        owner: {{ become_user }}
+        group: {{ become_user }}
+        mode: '0664'
+    
+    - name: Add nvim configuration directory
+      copy:
+        src: files/nvim
+        dest: /home/{{ become_user }}/.config/nvim
+        owner: {{ become_user }}
+        group: {{ become_user }}
+        mode: '0755'
+
+    - name: Add wezterm configuration directory
+      copy:
+        src: files/wezterm
+        dest: /home/{{ become_user }}/.config/wezterm
+        owner: {{ become_user }}
+        group: {{ become_user }}
+        mode: '0755'
+
+    ### Reboot System For Changes To Take Effect
+    - name: Reboot system
+      reboot:
+        msg: "Rebooting system to apply changes"
+        reboot_timeout: 300
+      when: reboot_now | lower == "yes"
