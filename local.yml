@@ -1,7 +1,7 @@
 ---
 
 - name: Ubuntu Desktop Environment Configuration
-  hosts: local
+  hosts: localhost
   become: yes
   gather_facts: yes
 
@@ -22,7 +22,7 @@
       prompt: "Do you want to reboot the system now? (yes/no)"
       private: no
       default: "no"  # Default fallback for reboot prompt
-      validate: '^yes$|^no$'  # Only accept "yes" or "no"
+    # validate: '^yes$|^no$'  # Only accept "yes" or "no"
 
   tasks:
     ### Ensure The User Exists, Then Hash password
