@@ -6,7 +6,7 @@
   gather_facts: yes
 
   vars_prompt:
-    ### Prompt to Enter a User to Become
+    # Prompt to Enter a User to Become
     - name: become_user
       prompt: "Enter the user you want to set"
       private: no
