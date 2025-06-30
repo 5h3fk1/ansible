@@ -17,8 +17,8 @@
       prompt: "Enter a password for {{ become_user}}"
       private: yes
 
-	- name: desktop_env
-	  prompt: "Enter your desktop environment (gnome/cinnamon/mate)"
+    - name: desktop_env
+      prompt: "Enter your desktop environment (gnome/cinnamon/mate)"
       private: no
 
     ### Prompt to Enter Reboot the system
