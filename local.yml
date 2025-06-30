@@ -144,16 +144,16 @@
       copy:
         src: files/nvim
         dest: /home/{{ become_user }}/.config/nvim
-        owner: {{ become_user }}
-        group: {{ become_user }}
+        owner: "{{ become_user }}"
+        group: "{{ become_user }}"
         mode: '0755'
 
     - name: Add wezterm configuration directory
       copy:
         src: files/wezterm
         dest: /home/{{ become_user }}/.config/wezterm
-        owner: {{ become_user }}
-        group: {{ become_user }}
+        owner: "{{ become_user }}"
+        group: "{{ become_user }}"
         mode: '0755'
 
     ### Reboot System For Changes To Take Effect
