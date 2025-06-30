@@ -53,13 +53,13 @@
 
     - name: Create the user
       ansible.builtin.user:
-      name: "{{ username }}"
-      password: "{{ user_password }}"
-      shell: "{{ user_shell }}"
-      groups: "{{ user_groups | split(',') }}"
-      append: yes
-      createhome: yes
-      state: present
+        name: "{{ username }}"
+        password: "{{ user_password }}"
+        shell: "{{ user_shell }}"
+        groups: "{{ user_groups | split(',') }}"
+        append: yes
+        createhome: yes
+        state: present
 
 
     ### Add GPG Keys And Repositories
