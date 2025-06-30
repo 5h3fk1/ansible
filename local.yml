@@ -8,37 +8,59 @@
     ### Variables That Prompt the User
   vars_prompt:
     ### Prompt to Enter a User to Become
-    - name: become_user
-      prompt: "Enter the user you want to set"
+    - name: username
+      prompt: "Enter the user you want to create"
+      private: no
+      
+    - name: user_password
+      prompt: "Enter a password for the user"
+      private: yes
+      encrypt: "sha512_crypt"
+
+    - name: user_shell
+      prompt: "Enter the user's shell"
+      private: no
+      default "/bin/bash"
+
+    - name: user_groups
+      prompt: "Enter the user's groups (comma-separated)"
       private: no
 
-    ### Prompt to Enter a Password For The New User
-    - name: become_user_password
-      prompt: "Enter a password for {{ become_user}}"
-      private: yes
 
     ### Prompt to Enter Reboot the system
-    - name: reboot_now
-      prompt: "Do you want to reboot the system now? (yes/no)"
-      private: no
-      default: "no"  # Default fallback for reboot prompt
-    # validate: '^yes$|^no$'  # Only accept "yes" or "no"
+    #  - name: reboot_now
+    #  prompt: "Do you want to reboot the system now? (yes/no)"
+    #  private: no
+    #  default: "no"
+    #  validate: '^yes$|^no$'  # Only accept "yes" or "no"
 
   tasks:
     ### Ensure The User Exists, Then Hash password
-    - name: Ensure the user is present and set password
-      user:
-        name: "{{ become_user }}"
-        state: present
-        password: "{{ become_user_password | password_hash('sha512') }}"
+    #- name: Ensure the user is present and set password
+    #  user:
+    #    name: "{{ become_user }}"
+    #    state: present
+    #    password: "{{ become_user_password | password_hash('sha512') }}"
 
     ### Add User to The Sudo Group
-    - name: Add become_user to the sudo group
-      user:
-        name: "{{ become_user }}"
-        groups: sudo
-        append: yes
-      become: yes
+    #- name: Add become_user to the sudo group
+    #  user:
+    #    name: "{{ become_user }}"
+    #    groups: sudo
+    #    append: yes
+    #  become: yes
+
+
+    - name: Create the user
+      ansible.builtin.user:
+      name: "{{ username }}"
+      password: "{{ user_password }}"
+      shell: "{{ user_shell }}"
+      groups: "{{ user_groups | split(',') }}"
+      append: yes
+      createhome: yes
+      state: present
+
 
     ### Add GPG Keys And Repositories
     - name: Add repositories and GPG keys
